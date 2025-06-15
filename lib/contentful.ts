@@ -1,11 +1,28 @@
-import { createClient } from "contentful"
+import { createClient } from "contentful";
 
-const client = createClient({
-  space: process.env.CONTENTFUL_SPACE_ID!,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-})
+const hasContentfulCredentials = () => {
+  return !!(process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_ACCESS_TOKEN);
+};
 
-export default client
+const createContentfulClient = () => {
+  if (!hasContentfulCredentials()) {
+    console.warn("Contentful credentials not found, using mock data");
+    return null;
+  }
+
+  try {
+    return createClient({
+      space: process.env.CONTENTFUL_SPACE_ID!,
+      accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
+    });
+  } catch (error) {
+    console.error("Failed to create Contentful client:", error);
+    return null;
+  }
+};
+
+const client = createContentfulClient();
+export default client;
 
 export interface BlogPost {
   sys: {
@@ -82,31 +99,6 @@ export interface TourDate {
     featured: boolean
   }
 }
-
-// Check if Contentful credentials are available
-const hasContentfulCredentials = () => {
-  return !!(process.env.CONTENTFUL_SPACE_ID && process.env.CONTENTFUL_ACCESS_TOKEN)
-}
-
-// Create client only if credentials are available
-const createContentfulClient = () => {
-  if (!hasContentfulCredentials()) {
-    console.warn("Contentful credentials not found, using mock data")
-    return null
-  }
-
-  try {
-    return createClient({
-      space: process.env.CONTENTFUL_SPACE_ID!,
-      accessToken: process.env.CONTENTFUL_ACCESS_TOKEN!,
-    })
-  } catch (error) {
-    console.error("Failed to create Contentful client:", error)
-    return null
-  }
-}
-
-const client = createContentfulClient()
 
 // Mock data for fallback
 const mockBlogPosts: BlogPost[] = [

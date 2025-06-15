@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react';
 import { Music, Heart } from "lucide-react"
 import client from '../../contentful'; // Adjust path if needed
